@@ -3,4 +3,14 @@
   <groupId>pos-java-jdbc</groupId>
   <artifactId>pos-java-jdbc</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+ <dependencies>
+ 
+ 	<dependency>
+  	 	<groupId>org.postgresql</groupId>
+    	<artifactId>postgresql</artifactId>
+   		<version>42.2.23</version>
+	</dependency>
+  
+ </dependencies>
+
 </project>
