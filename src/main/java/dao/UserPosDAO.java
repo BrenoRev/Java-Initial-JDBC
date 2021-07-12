@@ -22,15 +22,27 @@ public class UserPosDAO {
 
 	public void salvar(Userposjava userposjava) {
 		// ADICIONA NO BANCO DE DADOS O COMANDO " SQL " QUE FOI DIGITADO
+		
+		/* NECESSÁRIO UTILIZAR ESSE COMANDO SQL NO BANCO DE DADOS PARA AUTO INCREMENTAR OS ID
+		 
+		   create SEQUENCE usersequence
+			INCREMENT 1
+			minvalue 1
+			maxvalue 9223372036854775807
+			start 1;
+
+			ALTER TABLE userposjava ALTER COLUMN id SET DEFAULT nextval('usersequence'::regclass);
+			
+		 */
+		
 		try {
-			String sql = "insert into userposjava (id,nome,email) values (?,?,?)";
+			String sql = "insert into userposjava (nome,email) values (?,?)";
 			PreparedStatement insert = connection.prepareStatement(sql);
 
 			// DEFININDO O QUE VAI SER CADA INTERROGAÇÃO DO COMANDO
 			// PRIMEIRO INDICA QUAL A INTERROGAÇÃO E DEPOIS O VALOR
-			insert.setLong(1, userposjava.getId());
-			insert.setString(2, userposjava.getNome());
-			insert.setString(3, userposjava.getEmail());
+			insert.setString(1, userposjava.getNome());
+			insert.setString(2, userposjava.getEmail());
 
 			// PEDE PARA EXECUTAR O COMANDO
 			insert.execute();
@@ -114,6 +126,7 @@ public class UserPosDAO {
 
 	public void atualizar(Long id, String novoNome) {
 		// RECEBE UM USUARIO E UM NOME NOVO COMO PARAMETRO PARA SER ATUALIZADO
+		
 		try {
 			// MONTAGEM DO CÓDIGO SQL PARA PESQUISA NO BANCO DE DADOS
 			String sql = "UPDATE userposjava SET nome = ? WHERE id = " + id;

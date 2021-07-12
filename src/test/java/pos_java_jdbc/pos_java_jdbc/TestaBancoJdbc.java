@@ -15,9 +15,8 @@ public class TestaBancoJdbc {
 		UserPosDAO userPosDAO= new UserPosDAO();
 		Userposjava userposjava = new Userposjava();
 		
-		userposjava.setId(5L);
-		userposjava.setNome("Eliane");
-		userposjava.setEmail("elianemaria8858@gmail.com");
+		userposjava.setNome("Julia");
+		userposjava.setEmail("juliapaulino@gmail.com");
 		
 		userPosDAO.salvar(userposjava);
 		
@@ -40,8 +39,7 @@ public class TestaBancoJdbc {
 	public void initAtualizar() {
 		UserPosDAO userPosDAO= new UserPosDAO();
 		try {
-			Userposjava userposjava = userPosDAO.pesquisarUm(3L);
-			userposjava.setNome("Nome Mudado com o método atualizar");
+			// ID DO USUARIO E O NOVO NOME COMO PARAMETRO
 			userPosDAO.atualizar(3L, "Breno");
 		} catch (Exception e) {
 			e.printStackTrace();
