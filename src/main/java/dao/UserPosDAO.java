@@ -14,6 +14,53 @@ public class UserPosDAO {
 
 	// CRIAÇÃO DA PERSISTÊNCIA DE DADOS NO BANCO DE DADOS
 
+	public void comandosSQL() {
+		/*
+		 
+		 		// CRIAÇÃO DA TABELA DE USUARIOS 
+		-------------------------------------------------------------------------------------------------
+		
+		  CREATE TABLE public.userposjava
+			(
+    		nome character varying(255),
+    		email character varying(255),
+    		CONSTRAINT user_pk PRIMARY KEY (id),
+			);
+			
+		**************************************************************************************************
+		
+		  		// CRIAÇÃO DA TABELA DE TELEFONES DE USUARIOS IMPLEMENTANDO UMA FOREIGN KEY E UMA SEQUENCIA PARA OS IDS
+		------------------------------------------------------------------------------------------------- 	 
+		
+		 CREATE TABLE IF NOT EXISTS telefoneuser( id bigint NOT NULL, numero
+		 varchar(255) NOT NULL, tipo varchar(255) NOT NULL, usuariopessoa bigint NOT
+		 NULL, -- CRIANDO UMA PRIMARY KEY CHAMADA TELEFONE_ID CONSTRAINT telefone_id
+		 PRIMARY KEY(id), -- CRIANDO UMA CHAVE ESTRANGEIRA REFERENCIANDO A TABELA PAI
+		 FOREIGN KEY(usuariopessoa) REFERENCES userposjava(id) );
+		 
+		**************************************************************************************************
+				
+				// CRIAÇÃO DA SEQUENCIA DE AUTO INCREMENTO DE ID E IMPLEMENTAÇÃO NA TABELA
+		-------------------------------------------------------------------------------------------------
+		
+		 create SEQUENCE user_telefone_sequence INCREMENT 1 minvalue 1 maxvalue 9223372036854775807 start 1;
+		 ALTER TABLE telefoneuser ALTER COLUMN id SET DEFAULT nextval('user_telefone_sequence'::regclass);
+		 
+		**************************************************************************************************
+		  
+				// NECESSÁRIO UTILIZAR ESSE COMANDO SQL NO BANCO DE DADOS PARA AUTO INCREMENTAR OS ID
+		-------------------------------------------------------------------------------------------------
+		
+	    CREATE SEQUENCE usersequence INCREMENT 1 minvalue 1 maxvalue
+		9223372036854775807 start 1;
+		ALTER TABLE userposjava ALTER COLUMN id SET DEFAULT nextval('usersequence'::regclass);
+		
+		**************************************************************************************************
+		
+		
+		*/
+	}
+
 	private Connection connection;
 
 	public UserPosDAO() {
@@ -22,19 +69,7 @@ public class UserPosDAO {
 
 	public void salvar(Userposjava userposjava) {
 		// ADICIONA NO BANCO DE DADOS O COMANDO " SQL " QUE FOI DIGITADO
-		
-		/* NECESSÁRIO UTILIZAR ESSE COMANDO SQL NO BANCO DE DADOS PARA AUTO INCREMENTAR OS ID
-		 
-		   create SEQUENCE usersequence
-			INCREMENT 1
-			minvalue 1
-			maxvalue 9223372036854775807
-			start 1;
 
-			ALTER TABLE userposjava ALTER COLUMN id SET DEFAULT nextval('usersequence'::regclass);
-			
-		 */
-		
 		try {
 			String sql = "insert into userposjava (nome,email) values (?,?)";
 			PreparedStatement insert = connection.prepareStatement(sql);
@@ -126,7 +161,7 @@ public class UserPosDAO {
 
 	public void atualizar(Long id, String novoNome) {
 		// RECEBE UM USUARIO E UM NOME NOVO COMO PARAMETRO PARA SER ATUALIZADO
-		
+
 		try {
 			// MONTAGEM DO CÓDIGO SQL PARA PESQUISA NO BANCO DE DADOS
 			String sql = "UPDATE userposjava SET nome = ? WHERE id = " + id;
@@ -172,6 +207,6 @@ public class UserPosDAO {
 			}
 			e.printStackTrace();
 		}
-		
+
 	}
 }
