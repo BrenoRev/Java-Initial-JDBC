@@ -151,4 +151,27 @@ public class UserPosDAO {
 			e.printStackTrace();
 		}
 	}
+
+	public void deletar(Long id) {
+		// COMANDO SQL A SER EXECUTADO
+		String sql = "DELETE FROM userposjava WHERE id =" + id;
+		try {
+			// PREPARAR O COMANDO
+			PreparedStatement statement = connection.prepareStatement(sql);
+			// EXECUTAR E COMITAR O COMANDO
+			statement.execute();
+			connection.commit();
+			// RETORNAR UMA MENSAGEM DE SUCESSO
+			System.out.println("Usuario com o id " + id + " foi deletado com sucesso!");
+		} catch (SQLException e) {
+			try {
+				// EM CASO DE ERRO DAR ROLLBACK NA TRANSAÇÃO
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+		
+	}
 }
