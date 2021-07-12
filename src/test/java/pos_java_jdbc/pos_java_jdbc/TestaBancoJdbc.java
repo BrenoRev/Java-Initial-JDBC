@@ -9,10 +9,9 @@ import model.Userposjava;
 public class TestaBancoJdbc {
 
 	// TESTAR A CONEXÃO COM O BANCO DE DADOS COM JUNIT
-	/*
+	
 	@Test
 	public void initBanco() {
-		SingleConnection.getConnection();
 		UserPosDAO userPosDAO= new UserPosDAO();
 		Userposjava userposjava = new Userposjava();
 		
@@ -27,15 +26,28 @@ public class TestaBancoJdbc {
 	
 	@Test
 	public void initPesquisar() throws Exception {
-		SingleConnection.getConnection();
 		UserPosDAO userPosDAO= new UserPosDAO();
 		userPosDAO.pesquisarTodos();
 	}
-	*/
+	
 	@Test
 	public void initPesquisarUm() throws Exception {
-		SingleConnection.getConnection();
 		UserPosDAO userPosDAO= new UserPosDAO();
 		userPosDAO.pesquisarUm(9L);
 	}
+	
+	@Test
+	public void initAtualizar() {
+		UserPosDAO userPosDAO= new UserPosDAO();
+		try {
+			Userposjava userposjava = userPosDAO.pesquisarUm(3L);
+			userposjava.setNome("Nome Mudado com o método atualizar");
+			userPosDAO.atualizar(3L, "Breno");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
+		
 }

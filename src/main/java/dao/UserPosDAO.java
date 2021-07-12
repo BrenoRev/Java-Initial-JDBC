@@ -50,7 +50,6 @@ public class UserPosDAO {
 		}
 	}
 
-	// O METODO DE PESQUISAR VAI RETORNAR UMA LISTA DA ENTIDADE
 	public List<Userposjava> pesquisarTodos() throws Exception {
 
 		// INSTANCIAR UMA LISTA DE USERPOSJAVA
@@ -58,23 +57,29 @@ public class UserPosDAO {
 
 		// COMANDO SQL DE BUSCA DE ID, NOME E EMAIL
 		String sql = "select id, nome, email from userposjava";
+
 		// PREPARANDO O COMANDO RECEBENDO COMO PARAMETRO O COMANDO SQL
 		PreparedStatement comando = connection.prepareStatement(sql);
+
 		// RESULTSET VAI RECEBER O CONTEUDO QUE O COMANDO SQL RETORNAR
 		ResultSet resultado = comando.executeQuery();
+
 		// ENQUANTO O RESULTSET TIVER LINHAS A SEREM LIDAS ELE VAI SE MANTER NO LOOP
 		while (resultado.next()) {
 			// INSTANCIAR UM OBJETO PARA ADICIONAR A LISTA
 			Userposjava userposjava = new Userposjava();
+
 			// ATRIBUIR O ID, NOME E EMAIL PASSANDO COMO PARAMETRO A COLUNA
 			userposjava.setId(resultado.getLong("id"));
 			userposjava.setNome(resultado.getString("nome"));
 			userposjava.setEmail(resultado.getString("email"));
+
 			// ADICIONAR A LISTA O OBJETO INSTANCIADO E ATRIBUIDO
 			lista.add(userposjava);
 		}
 		// RETORNAR QUANDO O MÉTODO FOR CHAMADO O TOSTRING DE TODOS DA LISTA
 		lista.forEach(x -> System.out.println(x.toString()));
+
 		// RETORNAR A LISTA NA CHAMADA DO MÉTODO
 		return lista;
 	}
@@ -89,21 +94,48 @@ public class UserPosDAO {
 
 		// PREPARA O COMANDO A SER EXECUTADO
 		PreparedStatement comando = connection.prepareStatement(sql);
-		
-		//RECEBE OS RESULTADOS RETORNADO PELO COMANDO SQL
+
+		// RECEBE OS RESULTADOS RETORNADO PELO COMANDO SQL
 		ResultSet resultado = comando.executeQuery();
-		
+
 		// RETORNA 1 OU NENHUM
 		while (resultado.next()) {
 			// ATRIBUI AO OBJETO OS ATRIBUTOS PESQUISADOS PELA COLUNA
-		userposjava.setId(resultado.getLong("id"));
-		userposjava.setNome(resultado.getString("nome"));
-		userposjava.setEmail(resultado.getString("email"));
-		// IMPRIME AS INFORMAÇÕES DO USUARIO CASO EXISTA
-		System.out.println(userposjava.toString());
+			userposjava.setId(resultado.getLong("id"));
+			userposjava.setNome(resultado.getString("nome"));
+			userposjava.setEmail(resultado.getString("email"));
+			// IMPRIME AS INFORMAÇÕES DO USUARIO CASO EXISTA
+			System.out.println(userposjava.toString());
 		}
+
 		// RETORNA O OBJETO INSTANCIADO
 		return userposjava;
 	}
 
+	public void atualizar(Long id, String novoNome) {
+		// RECEBE UM USUARIO E UM NOME NOVO COMO PARAMETRO PARA SER ATUALIZADO
+		try {
+			// MONTAGEM DO CÓDIGO SQL PARA PESQUISA NO BANCO DE DADOS
+			String sql = "UPDATE userposjava SET nome = ? WHERE id = " + id;
+
+			// PREPARA O COMANDO A SER EXECUTA
+			PreparedStatement statement = connection.prepareStatement(sql);
+
+			// NA PRIMEIRA INTERROGAÇÃO VAI SER O NOME NOVO DO USUÁRIO
+			statement.setString(1, novoNome);
+
+			// EXECUTAR TODO O COMANDO
+			statement.execute();
+			connection.commit();
+
+		} catch (Exception e) {
+			try {
+				// EM CASO DE ERRO DAR ROLLBACK NAS MUDANÇAS
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+	}
 }
