@@ -25,6 +25,11 @@ public class Userposjava {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	@Override
+	public String toString() {
+		return "[ID= " + id + " | Nome= " + nome + " | Email= " + email + " ] \n" ;
+	}
+	
 	
 	
 }

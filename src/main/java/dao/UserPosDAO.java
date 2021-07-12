@@ -2,6 +2,10 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import conexaojdbc.SingleConnection;
 import model.Userposjava;
@@ -9,33 +13,97 @@ import model.Userposjava;
 public class UserPosDAO {
 
 	// CRIAÇÃO DA PERSISTÊNCIA DE DADOS NO BANCO DE DADOS
-	
+
 	private Connection connection;
-	
+
 	public UserPosDAO() {
 		connection = SingleConnection.getConnection();
 	}
-	
+
 	public void salvar(Userposjava userposjava) {
 		// ADICIONA NO BANCO DE DADOS O COMANDO " SQL " QUE FOI DIGITADO
 		try {
-		String sql = "insert into userposjava (id,nome,email) values (?,?,?)";
-		PreparedStatement insert = connection.prepareStatement(sql);
-		
-		// DEFININDO O QUE VAI SER CADA INTERROGAÇÃO DO COMANDO
-		// PRIMEIRO INDICA QUAL A INTERROGAÇÃO E DEPOIS O VALOR
-		insert.setLong(1, userposjava.getId());
-		insert.setString(2, userposjava.getNome());
-		insert.setString(3, userposjava.getEmail());
-		
-		// PEDE PARA EXECUTAR O COMANDO
-		insert.execute();
-		
-		// SALVA NO BANCO
-		
-		connection.commit();
-		}catch(Exception e) {
+			String sql = "insert into userposjava (id,nome,email) values (?,?,?)";
+			PreparedStatement insert = connection.prepareStatement(sql);
+
+			// DEFININDO O QUE VAI SER CADA INTERROGAÇÃO DO COMANDO
+			// PRIMEIRO INDICA QUAL A INTERROGAÇÃO E DEPOIS O VALOR
+			insert.setLong(1, userposjava.getId());
+			insert.setString(2, userposjava.getNome());
+			insert.setString(3, userposjava.getEmail());
+
+			// PEDE PARA EXECUTAR O COMANDO
+			insert.execute();
+
+			// SALVA NO BANCO
+
+			connection.commit();
+
+			// EM CASO DE ERRO DAR ROLLBACK EM TUDO QUE FOI FEITO
+		} catch (Exception e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 	}
+
+	// O METODO DE PESQUISAR VAI RETORNAR UMA LISTA DA ENTIDADE
+	public List<Userposjava> pesquisarTodos() throws Exception {
+
+		// INSTANCIAR UMA LISTA DE USERPOSJAVA
+		List<Userposjava> lista = new ArrayList<Userposjava>();
+
+		// COMANDO SQL DE BUSCA DE ID, NOME E EMAIL
+		String sql = "select id, nome, email from userposjava";
+		// PREPARANDO O COMANDO RECEBENDO COMO PARAMETRO O COMANDO SQL
+		PreparedStatement comando = connection.prepareStatement(sql);
+		// RESULTSET VAI RECEBER O CONTEUDO QUE O COMANDO SQL RETORNAR
+		ResultSet resultado = comando.executeQuery();
+		// ENQUANTO O RESULTSET TIVER LINHAS A SEREM LIDAS ELE VAI SE MANTER NO LOOP
+		while (resultado.next()) {
+			// INSTANCIAR UM OBJETO PARA ADICIONAR A LISTA
+			Userposjava userposjava = new Userposjava();
+			// ATRIBUIR O ID, NOME E EMAIL PASSANDO COMO PARAMETRO A COLUNA
+			userposjava.setId(resultado.getLong("id"));
+			userposjava.setNome(resultado.getString("nome"));
+			userposjava.setEmail(resultado.getString("email"));
+			// ADICIONAR A LISTA O OBJETO INSTANCIADO E ATRIBUIDO
+			lista.add(userposjava);
+		}
+		// RETORNAR QUANDO O MÉTODO FOR CHAMADO O TOSTRING DE TODOS DA LISTA
+		lista.forEach(x -> System.out.println(x.toString()));
+		// RETORNAR A LISTA NA CHAMADA DO MÉTODO
+		return lista;
+	}
+
+	public Userposjava pesquisarUm(Long id) throws Exception {
+
+		// INSTANCIAR UMA OBJETO DE USERPOSJAVA
+		Userposjava userposjava = new Userposjava();
+
+		// COMANDO SQL DE BUSCA DE ID, NOME E EMAIL POR ID
+		String sql = "SELECT id, nome, email FROM userposjava WHERE id = " + id;
+
+		// PREPARA O COMANDO A SER EXECUTADO
+		PreparedStatement comando = connection.prepareStatement(sql);
+		
+		//RECEBE OS RESULTADOS RETORNADO PELO COMANDO SQL
+		ResultSet resultado = comando.executeQuery();
+		
+		// RETORNA 1 OU NENHUM
+		while (resultado.next()) {
+			// ATRIBUI AO OBJETO OS ATRIBUTOS PESQUISADOS PELA COLUNA
+		userposjava.setId(resultado.getLong("id"));
+		userposjava.setNome(resultado.getString("nome"));
+		userposjava.setEmail(resultado.getString("email"));
+		// IMPRIME AS INFORMAÇÕES DO USUARIO CASO EXISTA
+		System.out.println(userposjava.toString());
+		}
+		// RETORNA O OBJETO INSTANCIADO
+		return userposjava;
+	}
+
 }
