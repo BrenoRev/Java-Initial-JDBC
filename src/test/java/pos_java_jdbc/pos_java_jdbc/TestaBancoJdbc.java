@@ -2,8 +2,8 @@ package pos_java_jdbc.pos_java_jdbc;
 
 import org.junit.Test;
 
-import conexaojdbc.SingleConnection;
 import dao.UserPosDAO;
+import model.Telefone;
 import model.Userposjava;
 
 public class TestaBancoJdbc {
@@ -32,7 +32,7 @@ public class TestaBancoJdbc {
 	@Test
 	public void initPesquisarUm() throws Exception {
 		UserPosDAO userPosDAO= new UserPosDAO();
-		userPosDAO.pesquisarUm(9L);
+		userPosDAO.pesquisarUm(3L);
 	}
 	
 	@Test
@@ -57,4 +57,13 @@ public class TestaBancoJdbc {
 		}
 	}
 		
+	@Test
+	public void initTelefone() {
+		UserPosDAO userPosDAO= new UserPosDAO();
+		Telefone telefone = new Telefone();
+		telefone.setNumero("8858-2992");
+		telefone.setTipo("Fixo");
+		telefone.setUsuario(10L);
+		userPosDAO.salvarTelefone(telefone);
+	}
 }

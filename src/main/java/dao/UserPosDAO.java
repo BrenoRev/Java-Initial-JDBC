@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import conexaojdbc.SingleConnection;
+import model.Telefone;
 import model.Userposjava;
 
 public class UserPosDAO {
@@ -97,6 +98,29 @@ public class UserPosDAO {
 		}
 	}
 
+	public void salvarTelefone(Telefone telefone) {
+		
+		try {
+			// INSERIR UM TELEFONE A UM USUARIO PELO ID
+			
+			String sql = "INSERT INTO public.telefoneuser(numero, tipo, usuariopessoa) VALUES (?, ?, ?)";
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.setString(1, telefone.getNumero());
+			statement.setString(2, telefone.getTipo());
+			statement.setLong(3, telefone.getUsuario());
+			statement.execute();
+			connection.commit();
+			
+		}catch(Exception e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+	}
+	
 	public List<Userposjava> pesquisarTodos() throws Exception {
 
 		// INSTANCIAR UMA LISTA DE USERPOSJAVA
@@ -135,10 +159,11 @@ public class UserPosDAO {
 
 		// INSTANCIAR UMA OBJETO DE USERPOSJAVA
 		Userposjava userposjava = new Userposjava();
-
+		Telefone telefone = new Telefone();
 		// COMANDO SQL DE BUSCA DE ID, NOME E EMAIL POR ID
-		String sql = "SELECT id, nome, email FROM userposjava WHERE id = " + id;
-
+		//String sql = "SELECT id, nome, email FROM userposjava WHERE id = " + id;
+		String sql = "select userposjava.id, userposjava.nome, userposjava.email, telefoneuser.numero, telefoneuser.tipo from userposjava JOIN telefoneuser ON userposjava.id = telefoneuser.usuariopessoa WHERE userposjava.id = " + id;
+		
 		// PREPARA O COMANDO A SER EXECUTADO
 		PreparedStatement comando = connection.prepareStatement(sql);
 
@@ -151,7 +176,11 @@ public class UserPosDAO {
 			userposjava.setId(resultado.getLong("id"));
 			userposjava.setNome(resultado.getString("nome"));
 			userposjava.setEmail(resultado.getString("email"));
+			telefone.setNumero(resultado.getString("numero"));
+			telefone.setTipo(resultado.getString("tipo"));
+			userposjava.setTelefone(telefone);
 			// IMPRIME AS INFORMAÇÕES DO USUARIO CASO EXISTA
+			//System.out.println(telefone.toString());
 			System.out.println(userposjava.toString());
 		}
 
