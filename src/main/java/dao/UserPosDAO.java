@@ -126,8 +126,12 @@ public class UserPosDAO {
 		// INSTANCIAR UMA LISTA DE USERPOSJAVA
 		List<Userposjava> lista = new ArrayList<Userposjava>();
 
-		// COMANDO SQL DE BUSCA DE ID, NOME E EMAIL
-		String sql = "select id, nome, email from userposjava";
+		// COMANDO SQL DE BUSCA DE ID, NOME E EMAIL E TELEFONE DE TODOS
+		
+		String sql = "select userposjava.id, userposjava.nome, userposjava.email, telefoneuser.numero, telefoneuser.tipo "
+				+ "FROM userposjava "
+				+ "LEFT JOIN telefoneuser "
+				+ "ON userposjava.id = telefoneuser.usuariopessoa";
 
 		// PREPARANDO O COMANDO RECEBENDO COMO PARAMETRO O COMANDO SQL
 		PreparedStatement comando = connection.prepareStatement(sql);
@@ -139,12 +143,15 @@ public class UserPosDAO {
 		while (resultado.next()) {
 			// INSTANCIAR UM OBJETO PARA ADICIONAR A LISTA
 			Userposjava userposjava = new Userposjava();
-
-			// ATRIBUIR O ID, NOME E EMAIL PASSANDO COMO PARAMETRO A COLUNA
+			Telefone telefone = new Telefone();
+			
+			// ATRIBUIR O ID, NOME E EMAIL E TELEFONE PASSANDO COMO PARAMETRO A COLUNA
 			userposjava.setId(resultado.getLong("id"));
 			userposjava.setNome(resultado.getString("nome"));
 			userposjava.setEmail(resultado.getString("email"));
-
+			telefone.setNumero(resultado.getString("numero"));
+			telefone.setTipo(resultado.getString("tipo"));
+			userposjava.setTelefone(telefone);
 			// ADICIONAR A LISTA O OBJETO INSTANCIADO E ATRIBUIDO
 			lista.add(userposjava);
 		}
@@ -157,12 +164,16 @@ public class UserPosDAO {
 
 	public Userposjava pesquisarUm(Long id) throws Exception {
 
-		// INSTANCIAR UMA OBJETO DE USERPOSJAVA
+		// INSTANCIAR UMA OBJETO DE USERPOSJAVA E TELEFONE
 		Userposjava userposjava = new Userposjava();
 		Telefone telefone = new Telefone();
-		// COMANDO SQL DE BUSCA DE ID, NOME E EMAIL POR ID
-		//String sql = "SELECT id, nome, email FROM userposjava WHERE id = " + id;
-		String sql = "select userposjava.id, userposjava.nome, userposjava.email, telefoneuser.numero, telefoneuser.tipo from userposjava JOIN telefoneuser ON userposjava.id = telefoneuser.usuariopessoa WHERE userposjava.id = " + id;
+		
+		// COMANDO SQL DE BUSCA DE ID, NOME E EMAIL E TELEFONE POR ID
+
+		String sql = "select userposjava.id, userposjava.nome, userposjava.email, telefoneuser.numero, telefoneuser.tipo "
+				+ "FROM userposjava "
+				+ "JOIN telefoneuser "
+				+ "ON userposjava.id = telefoneuser.usuariopessoa WHERE userposjava.id = " + id;
 		
 		// PREPARA O COMANDO A SER EXECUTADO
 		PreparedStatement comando = connection.prepareStatement(sql);
@@ -180,7 +191,6 @@ public class UserPosDAO {
 			telefone.setTipo(resultado.getString("tipo"));
 			userposjava.setTelefone(telefone);
 			// IMPRIME AS INFORMAÇÕES DO USUARIO CASO EXISTA
-			//System.out.println(telefone.toString());
 			System.out.println(userposjava.toString());
 		}
 
@@ -201,7 +211,7 @@ public class UserPosDAO {
 			// NA PRIMEIRA INTERROGAÇÃO VAI SER O NOME NOVO DO USUÁRIO
 			statement.setString(1, novoNome);
 
-			// EXECUTAR TODO O COMANDO
+			// EXECUTAR O COMANDO
 			statement.execute();
 			connection.commit();
 
@@ -216,7 +226,9 @@ public class UserPosDAO {
 		}
 	}
 
-	public void deletar(Long id) {
+	public void deletarUsuario(Long id) {
+		// DELETAR UM USUARIO CASO ELE * NÃO * TENHA UM TELEFONE VINCULADO COMO CHAVE ESTRANGEIRA
+		
 		// COMANDO SQL A SER EXECUTADO
 		String sql = "DELETE FROM userposjava WHERE id =" + id;
 		try {
@@ -237,5 +249,33 @@ public class UserPosDAO {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void deletarUsuarioTelefone(Long id) throws SQLException {
+		// DELETAR UM USUARIO CASO ELE JÁ TENHA UM TELEFONE VINCULADO COMO CHAVE ESTRANGEIRA
+		
+		// PRIMEIRO NECESSITA DELETAR O TELEFONE PARA QUEBRAR A LIGAÇÃO ENTRE TABELAS 
+		String sqlFone = "DELETE FROM telefoneuser WHERE usuariopessoa =" + id;
+		
+		// DEPOIS EXCLUIR O USUARIO JÁ DESVINCULADO
+		String sqlUser = "DELETE FROM userposjava WHERE id =" +id;
+		
+		try {
+			// PRIMERO EXECUTA O COMANDO PRA DESVINCULAR A CHAVE ESTRANGEIRA
+			PreparedStatement statement = connection.prepareStatement(sqlFone);
+			statement.executeUpdate();
+			connection.commit();
+			
+			// DEPOIS O COMANDO DE DELEÇÃO
+			statement = connection.prepareStatement(sqlUser);
+			statement.executeUpdate();
+			connection.commit();
+			
+		} catch (SQLException e) {
+			// EM CASO DE ERRO NO MEIO DO PROCESSO NÃO REALIZAR A OPERAÇÃO E DAR ROLLBACK
+			connection.rollback();
+			e.printStackTrace();
+		}
+		
 	}
 }

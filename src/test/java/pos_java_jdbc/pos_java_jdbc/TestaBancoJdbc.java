@@ -1,5 +1,7 @@
 package pos_java_jdbc.pos_java_jdbc;
 
+import java.sql.SQLException;
+
 import org.junit.Test;
 
 import dao.UserPosDAO;
@@ -49,9 +51,10 @@ public class TestaBancoJdbc {
 	
 	@Test
 	public void initDeletar() {
+		// DELETAR O USUARIO SE NÃO TIVER NENHUM TELEFONE VINCULADO A ELE
 		UserPosDAO userPosDAO = new UserPosDAO();
 		try {
-			userPosDAO.deletar(5L);
+			userPosDAO.deletarUsuario(5L);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -66,4 +69,16 @@ public class TestaBancoJdbc {
 		telefone.setUsuario(10L);
 		userPosDAO.salvarTelefone(telefone);
 	}
+
+	@Test
+	public void initDeleteUserFone() {
+		UserPosDAO userPosDAO = new UserPosDAO();
+		try {
+			userPosDAO.deletarUsuarioTelefone(10L);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
+
+

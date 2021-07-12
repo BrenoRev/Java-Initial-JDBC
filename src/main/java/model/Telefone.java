@@ -33,7 +33,7 @@ public class Telefone {
 	}
 	@Override
 	public String toString() {
-		return "Numero=" + numero + " | Tipo= " + tipo + " ]";
+		return "Numero= " + numero + " | Tipo= " + tipo + " ]";
 	}
 	
 	
